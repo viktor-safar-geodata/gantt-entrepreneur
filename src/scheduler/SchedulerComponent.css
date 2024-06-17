@@ -1,0 +1,7 @@
+@import 'https://js.arcgis.com/4.29/@arcgis/core/assets/esri/themes/light/main.css';
+@import '@bryntum/scheduler/scheduler.stockholm.css';
+
+#geodata-scheduler-container {
+  height: 100%;
+  width: 100%;
+}

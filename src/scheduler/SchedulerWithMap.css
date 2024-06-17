@@ -1,0 +1,12 @@
+.geodata-scheduler-with-map-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-div {
+  height: 100%;
+  text-align: center;
+  padding: 25%;
+}
