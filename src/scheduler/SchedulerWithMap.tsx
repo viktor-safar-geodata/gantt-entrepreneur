@@ -43,8 +43,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
       new FeatureLayer({
         url: 'https://veidekke.cloudgis.no/enterprise/rest/services/Hosted/Basrapport/FeatureServer/0',
         id: 'basrapport',
-        apiKey:
-          'hGJLU7y3zNZCW7YJlZlawY1i9aDw3ZBxYEtV1QPKVOUteSu60pEujgbW4ejKqlY5Q41UqZH3jjzNcMOTrTfcpf8HcaZWxr-oHOwFBiyKstM9ft-Nu6KscRrv5lojGc6OOicDsPek5_OH8JlczfmCvi7eGN1Bp8zRzgApBpPq2bM9dIAzM3M0595n_tQc3l_-',
+        apiKey: 'get your own at',
         // https://veidekke.cloudgis.no/enterprise/sharing/rest/generateToken
       })
     );
