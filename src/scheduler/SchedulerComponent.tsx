@@ -9,11 +9,24 @@ export interface ISchedulerComponentProps {
   onEventSelected: (eventObjectId: number) => void;
   startDate: Date;
   endDate: Date;
-  listeners?: object;
 }
 
 export const SchedulerComponent = (props: ISchedulerComponentProps) => {
   const scheduler = React.useRef<BryntumScheduler>(null);
+
+  const handleSchedulerHasChanges = (bryntumEvent: any) => {
+    // https://bryntum.com/products/scheduler/docs/guide/Scheduler/data/catching_changes
+    const changes = bryntumEvent.source.changes;
+
+    const eventsAdded = changes.events.added as EventModel[];
+    console.log('eventsAdded', eventsAdded);
+
+    const eventsUpdated = changes.events.updated as EventModel[];
+    console.log('eventsUpdated', eventsUpdated);
+
+    const eventsRemoved = changes.events.removed as EventModel[];
+    console.log('eventsRemoved', eventsRemoved);
+  };
 
   const onEventClickHandler = (event: {
     source: Scheduler;
@@ -39,7 +52,12 @@ export const SchedulerComponent = (props: ISchedulerComponentProps) => {
           barMargin={0}
           multiEventSelect={true}
           columns={[{ text: 'Name', field: 'name' }]}
-          listeners={props.listeners}
+          crudManager={{
+            listeners: {
+              // https://bryntum.com/products/scheduler/docs/api/Scheduler/data/CrudManager#config-listeners
+              hasChanges: handleSchedulerHasChanges,
+            },
+          }}
         />
       )}
     </div>

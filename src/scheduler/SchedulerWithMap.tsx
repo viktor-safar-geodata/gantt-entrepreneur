@@ -30,14 +30,6 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
     layerViewRef.current = layerView;
   };
 
-  const handleSchedulerHasChanges = (bryntumEvent: any) => {
-    console.log('handleSchedulerHasChanges', bryntumEvent);
-  };
-
-  const listeners = {
-    hasChanges: handleSchedulerHasChanges,
-  };
-
   React.useEffect(() => {
     if (mapRef.current) return;
     mapRef.current = new Map({
@@ -122,7 +114,6 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
             onEventSelected={onEventSelectedHandler}
             startDate={startDate}
             endDate={endDate}
-            listeners={listeners}
           />
           <MapComponent
             map={mapRef.current!}
