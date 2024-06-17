@@ -8,7 +8,6 @@ import './SchedulerWithMap.css';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
 import { EventModel, ResourceModel } from '@bryntum/scheduler';
 import Graphic from '@arcgis/core/Graphic.js';
-import { schedulerConfig } from './SchedulerConfig';
 
 export interface ISchedulerWithMapProps {}
 
@@ -18,19 +17,25 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
   const mapRef = React.useRef<__esri.Map>();
   const layerViewRef = React.useRef<__esri.FeatureLayerView>();
   const highlightRef = React.useRef<__esri.Handle>();
+  const [startDate, setStartDate] = React.useState<Date>(new Date(2024, 0, 1));
+  const [endDate, setEndDate] = React.useState<Date>(new Date(2024, 0, 7));
 
   const [schedulerData, setSchedulerData] = React.useState<SchedulerData>();
 
-  function handleSetMapView(mapView: MapView): void {
+  const handleSetMapView = (mapView: MapView): void => {
     mapViewRef.current = mapView;
-  }
+  };
 
-  const handleSetLayerView = (layerView: __esri.FeatureLayerView) => {
+  const handleSetLayerView = (layerView: __esri.FeatureLayerView): void => {
     layerViewRef.current = layerView;
   };
 
   const handleSchedulerHasChanges = (bryntumEvent: any) => {
     console.log('handleSchedulerHasChanges', bryntumEvent);
+  };
+
+  const listeners = {
+    hasChanges: handleSchedulerHasChanges,
   };
 
   React.useEffect(() => {
@@ -43,8 +48,6 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
       new FeatureLayer({
         url: 'https://veidekke.cloudgis.no/enterprise/rest/services/Hosted/Basrapport/FeatureServer/0',
         id: 'basrapport',
-        apiKey: 'get your own at',
-        // https://veidekke.cloudgis.no/enterprise/sharing/rest/generateToken
       })
     );
 
@@ -60,6 +63,8 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
       const uniqueResources = new Set<string>();
       const events: EventModel[] = [];
       result.features.forEach((feature) => {
+        if (feature.attributes['fra_klokken'] > feature.attributes['til_klokken']) return;
+
         uniqueResources.add(feature.attributes[groupFieldName]);
         events.push({
           id: feature.attributes['objectid'],
@@ -78,15 +83,15 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
         } as ResourceModel);
       }
 
-      schedulerConfig.startDate = events.reduce(
-        (min, p) => (p.startDate < min ? p.startDate : min),
-        events[0].startDate
-      );
-      schedulerConfig.endDate = events.reduce((max, p) => (p.endDate > max ? p.endDate : max), events[0].endDate);
+      setStartDate(() => {
+        const result = events.reduce((min, p) => (p.startDate < min ? p.startDate : min), events[0].startDate);
+        return new Date(result);
+      });
 
-      schedulerConfig.listeners = {
-        hasChanges: handleSchedulerHasChanges,
-      };
+      setEndDate(() => {
+        const result = events.reduce((max, p) => (p.endDate > max ? p.endDate : max), events[0].endDate);
+        return new Date(result);
+      });
 
       setSchedulerData({
         resources,
@@ -114,8 +119,10 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
         <>
           <SchedulerComponent
             schedulerData={schedulerData}
-            schedulerConfig={schedulerConfig}
             onEventSelected={onEventSelectedHandler}
+            startDate={startDate}
+            endDate={endDate}
+            listeners={listeners}
           />
           <MapComponent
             map={mapRef.current!}

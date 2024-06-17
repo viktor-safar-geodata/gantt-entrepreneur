@@ -2,12 +2,14 @@ import { BryntumScheduler } from '@bryntum/scheduler-react';
 import './SchedulerComponent.css';
 import React from 'react';
 import { SchedulerData } from './models';
-import { AssignmentModel, EventModel, Scheduler, SchedulerConfig } from '@bryntum/scheduler';
+import { AssignmentModel, EventModel, Scheduler } from '@bryntum/scheduler';
 
 export interface ISchedulerComponentProps {
   schedulerData: SchedulerData;
-  schedulerConfig: Partial<SchedulerConfig>;
   onEventSelected: (eventObjectId: number) => void;
+  startDate: Date;
+  endDate: Date;
+  listeners?: object;
 }
 
 export const SchedulerComponent = (props: ISchedulerComponentProps) => {
@@ -27,10 +29,17 @@ export const SchedulerComponent = (props: ISchedulerComponentProps) => {
       {props.schedulerData && (
         <BryntumScheduler
           ref={scheduler}
-          config={props.schedulerConfig}
           resources={props.schedulerData.resources}
           events={props.schedulerData.events}
           onEventClick={onEventClickHandler}
+          startDate={props.startDate}
+          endDate={props.endDate}
+          viewPreset={'weekAndDayLetter'}
+          rowHeight={40}
+          barMargin={0}
+          multiEventSelect={true}
+          columns={[{ text: 'Name', field: 'name' }]}
+          listeners={props.listeners}
         />
       )}
     </div>
