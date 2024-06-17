@@ -2,13 +2,13 @@ import MapView from '@arcgis/core/views/MapView.js';
 import Map from '@arcgis/core/Map.js';
 import React from 'react';
 import Graphic from '@arcgis/core/Graphic.js';
-
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js';
 
 export interface IMapComponentProps {
   map: Map;
   features: Graphic[];
   setMapView: (mapView: MapView) => void;
+  setLayerView: (mapView: __esri.FeatureLayerView) => void;
 }
 
 export default function MapComponent(props: IMapComponentProps) {
@@ -24,6 +24,11 @@ export default function MapComponent(props: IMapComponentProps) {
 
     view.when(() => {
       props.setMapView(view);
+
+      const layer = props.map.findLayerById('basrapport') as __esri.FeatureLayer;
+      view.whenLayerView(layer).then((layerView) => {
+        props.setLayerView(layerView);
+      });
 
       const combinedExtent = geometryEngine.union(props.features.map((feature) => feature.geometry));
       view.goTo(combinedExtent);
