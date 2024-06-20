@@ -1,7 +1,7 @@
 const colorsMap = new Map([
   ['Piggingogrensk', '#FF6633'],
   ['Boltemontering', '#FFB399'],
-  ['Injeksjon', '#FF33FF'],
+  ['Injeksjon', '#C1E1C1'],
   ['Lading', '#FFFF99'],
   ['Lasting', '#99E6E6'],
   ['Boring', '#E6B333'],

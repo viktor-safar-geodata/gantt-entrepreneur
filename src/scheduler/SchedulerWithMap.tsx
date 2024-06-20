@@ -1,14 +1,15 @@
 import * as React from 'react';
-import SchedulerComponent from './SchedulerComponent';
+import SchedulerComponent, { SchedulerComponentRef } from './SchedulerComponent';
 import MapComponent from './MapComponent';
 import MapView from '@arcgis/core/views/MapView.js';
 import EsriMap from '@arcgis/core/Map.js';
 import { SchedulerData } from './models';
 import './SchedulerWithMap.css';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
-import { EventModel, ResourceModel } from '@bryntum/scheduler';
+import { EventModel, Field, ResourceModel } from '@bryntum/scheduler';
 import Graphic from '@arcgis/core/Graphic.js';
 import { getEventColor } from '../utils/colors';
+import { BryntumDateField, BryntumFilterField, BryntumScheduler, BryntumSplitter } from '@bryntum/scheduler-react';
 
 export interface ISchedulerWithMapProps {}
 
@@ -20,6 +21,12 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
   const highlightRef = React.useRef<__esri.Handle>();
   const [startDate, setStartDate] = React.useState<Date>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = React.useState<Date>(new Date(2024, 0, 7));
+
+  const today = new Date();
+  const weekAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+  const [currentDate, setCurrentDate] = React.useState<Date>(weekAgo);
+
+  const schedulerComponent = React.useRef<SchedulerComponentRef>(null);
 
   const [schedulerData, setSchedulerData] = React.useState<SchedulerData>();
 
@@ -91,12 +98,6 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
         resources,
         events,
       });
-
-      const uniqueEventNames = new Set<string>();
-      events.forEach((event) => {
-        uniqueEventNames.add(event.name);
-      });
-      console.log('uniqueEventNames', Array.from(uniqueEventNames.values()));
     });
   }, []);
 
@@ -114,23 +115,62 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
     highlightRef.current = layerViewRef.current!.highlight(eventObjectId);
   };
 
+  const onDateChanged = React.useCallback(
+    (event: {
+      source: Field | any;
+      value: string | number | boolean | any;
+      oldValue: string | number | boolean | any;
+      valid: boolean;
+      event: Event;
+      userAction: boolean;
+    }) => {
+      setCurrentDate(event.value);
+    },
+    []
+  );
+
   return (
     <div className="geodata-scheduler-with-map-container">
       {schedulerData && (
         <>
-          <SchedulerComponent
-            schedulerData={schedulerData}
-            groupName={groupFieldName}
-            onEventSelected={onEventSelectedHandler}
-            startDate={startDate}
-            endDate={endDate}
-          />
-          <MapComponent
-            map={mapRef.current!}
-            features={featuresRef.current}
-            setMapView={handleSetMapView}
-            setLayerView={handleSetLayerView}
-          />
+          <div>
+            <BryntumDateField
+              label={'Velg dato'}
+              editable={true}
+              onChange={onDateChanged}
+              margin={'0.5rem'}
+              format="DD.MM.YYYY"
+              width={'15rem'}
+              value={currentDate}
+            />
+            <BryntumFilterField
+              margin={'0.5rem'}
+              placeholder={'Søk...'}
+              width={'15rem'}
+              field={'name'}
+              onChange={(value) => {
+                schedulerComponent.current?.filterEvents(value.value);
+              }}
+            />
+          </div>
+          <div className="geodata-scheduler-with-map-container">
+            <SchedulerComponent
+              ref={schedulerComponent}
+              schedulerData={schedulerData}
+              groupName={groupFieldName}
+              onEventSelected={onEventSelectedHandler}
+              startDate={startDate}
+              endDate={endDate}
+              currentDate={currentDate}
+            />
+            <BryntumSplitter />
+            <MapComponent
+              map={mapRef.current!}
+              features={featuresRef.current}
+              setMapView={handleSetMapView}
+              setLayerView={handleSetLayerView}
+            />
+          </div>
         </>
       )}
       {!schedulerData && <div className="loading-div">Loading...</div>}
