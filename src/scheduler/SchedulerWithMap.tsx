@@ -2,12 +2,13 @@ import * as React from 'react';
 import SchedulerComponent from './SchedulerComponent';
 import MapComponent from './MapComponent';
 import MapView from '@arcgis/core/views/MapView.js';
-import Map from '@arcgis/core/Map.js';
+import EsriMap from '@arcgis/core/Map.js';
 import { SchedulerData } from './models';
 import './SchedulerWithMap.css';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
 import { EventModel, ResourceModel } from '@bryntum/scheduler';
 import Graphic from '@arcgis/core/Graphic.js';
+import { getEventColor } from '../utils/colors';
 
 export interface ISchedulerWithMapProps {}
 
@@ -22,6 +23,8 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
 
   const [schedulerData, setSchedulerData] = React.useState<SchedulerData>();
 
+  const groupFieldName = 'løp';
+
   const handleSetMapView = (mapView: MapView): void => {
     mapViewRef.current = mapView;
   };
@@ -32,7 +35,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
 
   React.useEffect(() => {
     if (mapRef.current) return;
-    mapRef.current = new Map({
+    mapRef.current = new EsriMap({
       basemap: 'streets-navigation-vector',
     });
 
@@ -45,9 +48,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
 
     const layer = mapRef.current.findLayerById('basrapport') as FeatureLayer;
     const query = layer.createQuery();
-    query.where = "fra_klokken > '2024-01-01' and til_klokken < '2024-01-14'";
-
-    const groupFieldName = 'løp';
+    // query.where = "fra_klokken > '2024-01-01' and til_klokken < '2024-01-14'";
 
     layer.queryFeatures(query).then((result) => {
       featuresRef.current = result.features;
@@ -64,6 +65,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
           startDate: new Date(feature.attributes['fra_klokken']),
           endDate: new Date(feature.attributes['til_klokken']),
           name: feature.attributes['aktivitiet'],
+          eventColor: getEventColor(feature.attributes['aktivitiet']),
         } as EventModel);
       });
 
@@ -89,6 +91,12 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
         resources,
         events,
       });
+
+      const uniqueEventNames = new Set<string>();
+      events.forEach((event) => {
+        uniqueEventNames.add(event.name);
+      });
+      console.log('uniqueEventNames', Array.from(uniqueEventNames.values()));
     });
   }, []);
 
@@ -105,12 +113,14 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
 
     highlightRef.current = layerViewRef.current!.highlight(eventObjectId);
   };
+
   return (
     <div className="geodata-scheduler-with-map-container">
       {schedulerData && (
         <>
           <SchedulerComponent
             schedulerData={schedulerData}
+            groupName={groupFieldName}
             onEventSelected={onEventSelectedHandler}
             startDate={startDate}
             endDate={endDate}
