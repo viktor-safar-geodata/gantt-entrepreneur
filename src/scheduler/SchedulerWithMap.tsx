@@ -145,7 +145,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
             />
             <BryntumFilterField
               margin={'0.5rem'}
-              placeholder={'Søk...'}
+              placeholder={'Filter'}
               width={'15rem'}
               field={'name'}
               onChange={(value) => {
