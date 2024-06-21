@@ -17,7 +17,7 @@ export interface SchedulerComponentRef {
   filterEvents: (searchValue: string) => void;
 }
 
-export const SchedulerComponent = React.forwardRef<SchedulerComponentRef, ISchedulerComponentProps>((props, ref) => {
+const SchedulerComponent = React.forwardRef<SchedulerComponentRef, ISchedulerComponentProps>((props, ref) => {
   const scheduler = React.useRef<BryntumScheduler>(null);
 
   React.useImperativeHandle(

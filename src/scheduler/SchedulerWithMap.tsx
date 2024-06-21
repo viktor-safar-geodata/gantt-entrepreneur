@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SchedulerComponent, { SchedulerComponentRef } from './SchedulerComponent';
-import MapComponent from './MapComponent';
+import MapComponent, { MapComponentRef } from './MapComponent';
 import MapView from '@arcgis/core/views/MapView.js';
 import EsriMap from '@arcgis/core/Map.js';
 import { SchedulerData } from './models';
@@ -9,16 +9,14 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
 import { EventModel, Field, ResourceModel } from '@bryntum/scheduler';
 import Graphic from '@arcgis/core/Graphic.js';
 import { getEventColor } from '../utils/colors';
-import { BryntumDateField, BryntumFilterField, BryntumScheduler, BryntumSplitter } from '@bryntum/scheduler-react';
+import { BryntumDateField, BryntumFilterField, BryntumSplitter } from '@bryntum/scheduler-react';
 
 export interface ISchedulerWithMapProps {}
 
 export function SchedulerWithMap(props: ISchedulerWithMapProps) {
-  const mapViewRef = React.useRef<MapView | null>(null);
   const featuresRef = React.useRef<Graphic[]>([]);
   const mapRef = React.useRef<__esri.Map>();
-  const layerViewRef = React.useRef<__esri.FeatureLayerView>();
-  const highlightRef = React.useRef<__esri.Handle>();
+
   const [startDate, setStartDate] = React.useState<Date>(new Date(2024, 0, 1));
   const [endDate, setEndDate] = React.useState<Date>(new Date(2024, 0, 7));
 
@@ -27,18 +25,11 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
   const [currentDate, setCurrentDate] = React.useState<Date>(weekAgo);
 
   const schedulerComponent = React.useRef<SchedulerComponentRef>(null);
+  const mapComponentRef = React.useRef<MapComponentRef>(null);
 
   const [schedulerData, setSchedulerData] = React.useState<SchedulerData>();
 
   const groupFieldName = 'løp';
-
-  const handleSetMapView = (mapView: MapView): void => {
-    mapViewRef.current = mapView;
-  };
-
-  const handleSetLayerView = (layerView: __esri.FeatureLayerView): void => {
-    layerViewRef.current = layerView;
-  };
 
   React.useEffect(() => {
     if (mapRef.current) return;
@@ -102,17 +93,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
   }, []);
 
   const onEventSelectedHandler = (eventObjectId: number) => {
-    highlightRef.current?.remove();
-    const feature = featuresRef.current.find((f) => f.attributes['objectid'] === eventObjectId);
-    const extentOrGeometry = feature!.geometry.extent || feature!.geometry;
-
-    if (!mapViewRef.current?.extent.contains(extentOrGeometry)) {
-      mapViewRef.current!.goTo({
-        target: extentOrGeometry,
-      });
-    }
-
-    highlightRef.current = layerViewRef.current!.highlight(eventObjectId);
+    mapComponentRef.current?.goToFeature(eventObjectId);
   };
 
   const onDateChanged = React.useCallback(
@@ -164,12 +145,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
               currentDate={currentDate}
             />
             <BryntumSplitter />
-            <MapComponent
-              map={mapRef.current!}
-              features={featuresRef.current}
-              setMapView={handleSetMapView}
-              setLayerView={handleSetLayerView}
-            />
+            <MapComponent ref={mapComponentRef} map={mapRef.current!} features={featuresRef.current} />
           </div>
         </>
       )}
