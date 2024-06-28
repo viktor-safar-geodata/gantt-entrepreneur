@@ -36,6 +36,14 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      - name: Configure Bryntum registry
+        run: npm config set "@bryntum:registry=https://npm.bryntum.com"
+      - name: Check npm registry
+        run: npm config list
+      - name: Install npm-cli-login
+        run: npm install npm-cli-login
+      - name: Log in to Brytum registry
+        run: npm-cli-login -u viktor.safar..geodata.no -p trial -e viktor.safar@geodata.no -r https://npm.bryntum.com
       - name: Install dependencies
         run: npm ci
       - name: Build
