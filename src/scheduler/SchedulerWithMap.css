@@ -1,8 +1,18 @@
+@import 'https://js.arcgis.com/4.29/@arcgis/core/assets/esri/themes/light/main.css';
+
 .geodata-scheduler-with-map-container {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.geodata-scheduler-with-map-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0.5rem;
 }
 
 .loading-div {

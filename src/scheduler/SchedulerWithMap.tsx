@@ -1,19 +1,22 @@
 import * as React from 'react';
 import SchedulerComponent, { SchedulerComponentRef } from './SchedulerComponent';
 import MapComponent, { MapComponentRef } from './MapComponent';
-import MapView from '@arcgis/core/views/MapView.js';
 import EsriMap from '@arcgis/core/Map.js';
 import { SchedulerData } from './models';
 import './SchedulerWithMap.css';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
-import { EventModel, Field, ResourceModel } from '@bryntum/scheduler';
+import { EventModel, Field, LocaleManager, ResourceModel } from '@bryntum/scheduler';
 import Graphic from '@arcgis/core/Graphic.js';
 import { getEventColor } from '../utils/colors';
-import { BryntumDateField, BryntumFilterField, BryntumSplitter } from '@bryntum/scheduler-react';
+import { BryntumDateField, BryntumFilterField, BryntumSplitter, BryntumThemeCombo } from '@bryntum/scheduler-react';
 
 export interface ISchedulerWithMapProps {}
 
 export function SchedulerWithMap(props: ISchedulerWithMapProps) {
+  console.log('LocaleManager.locales');
+  console.log(LocaleManager.locales);
+  //LocaleManager.applyLocale(navigator.language); ?? it's possible the licensed version does this internally, but the demo version only comes with English
+
   const featuresRef = React.useRef<Graphic[]>([]);
   const mapRef = React.useRef<__esri.Map>();
 
@@ -114,18 +117,16 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
     <div className="geodata-scheduler-with-map-container">
       {schedulerData && (
         <>
-          <div>
+          <div className="geodata-scheduler-with-map-header">
             <BryntumDateField
               label={'Velg dato'}
               editable={true}
               onChange={onDateChanged}
-              margin={'0.5rem'}
               format="DD.MM.YYYY"
               width={'15rem'}
               value={currentDate}
             />
             <BryntumFilterField
-              margin={'0.5rem'}
               placeholder={'Filter'}
               width={'15rem'}
               field={'name'}
@@ -133,6 +134,7 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
                 schedulerComponent.current?.filterEvents(value.value);
               }}
             />
+            <BryntumThemeCombo />
           </div>
           <div className="geodata-scheduler-with-map-container">
             <SchedulerComponent
