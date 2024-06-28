@@ -2,7 +2,7 @@ import * as React from 'react';
 import SchedulerComponent, { SchedulerComponentRef } from './SchedulerComponent';
 import MapComponent, { MapComponentRef } from './MapComponent';
 import EsriMap from '@arcgis/core/Map.js';
-import { SchedulerData } from './models';
+import { SchedulerData, basrapportLayer } from './models';
 import './SchedulerWithMap.css';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
 import { EventModel, Field, LocaleManager, ResourceModel } from '@bryntum/scheduler';
@@ -43,11 +43,11 @@ export function SchedulerWithMap(props: ISchedulerWithMapProps) {
     mapRef.current.add(
       new FeatureLayer({
         url: 'https://veidekke.cloudgis.no/enterprise/rest/services/Hosted/Basrapport/FeatureServer/0',
-        id: 'basrapport',
+        id: basrapportLayer,
       })
     );
 
-    const layer = mapRef.current.findLayerById('basrapport') as FeatureLayer;
+    const layer = mapRef.current.findLayerById(basrapportLayer) as FeatureLayer;
     const query = layer.createQuery();
     // query.where = "fra_klokken > '2024-01-01' and til_klokken < '2024-01-14'";
 

@@ -4,3 +4,5 @@ export interface SchedulerData {
   resources: ResourceModel[];
   events: EventModel[];
 }
+
+export const basrapportLayer = 'basrapport';

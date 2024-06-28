@@ -3,6 +3,7 @@ import Map from '@arcgis/core/Map.js';
 import React from 'react';
 import Graphic from '@arcgis/core/Graphic.js';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js';
+import { basrapportLayer } from './models';
 
 export interface IMapComponentProps {
   map: Map;
@@ -49,7 +50,7 @@ const MapComponent = React.forwardRef<MapComponentRef, IMapComponentProps>((prop
     view.when(() => {
       mapViewRef.current = view;
 
-      const layer = props.map.findLayerById('basrapport') as __esri.FeatureLayer;
+      const layer = props.map.findLayerById(basrapportLayer) as __esri.FeatureLayer;
       view.whenLayerView(layer).then((layerView) => {
         layerViewRef.current = layerView;
       });
