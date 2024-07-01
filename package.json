@@ -10,10 +10,6 @@
     "preview": "vite preview",
     "postinstall": "postinstall"
   },
-  "postinstall": {
-    "node_modules\\@bryntum\\scheduler\\*.css*": "copy public/themes/",
-    "node_modules\\@bryntum\\scheduler\\fonts": "copy public/themes/fonts"
-  },
   "dependencies": {
     "@arcgis/core": "^4.29.10",
     "@bryntum/scheduler": "npm:@bryntum/scheduler-trial@^5.6.12",
@@ -33,7 +29,6 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "postinstall": "~0.10.3",
     "prettier": "^3.3.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
