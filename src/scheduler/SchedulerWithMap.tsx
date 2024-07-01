@@ -10,9 +10,7 @@ import Graphic from '@arcgis/core/Graphic.js';
 import { getEventColor } from '../utils/colors';
 import { BryntumDateField, BryntumFilterField, BryntumSplitter, BryntumThemeCombo } from '@bryntum/scheduler-react';
 
-export interface ISchedulerWithMapProps {}
-
-export function SchedulerWithMap(props: ISchedulerWithMapProps) {
+export function SchedulerWithMap() {
   console.log('LocaleManager.locales');
   console.log(LocaleManager.locales);
   //LocaleManager.applyLocale(navigator.language); ?? it's possible the licensed version does this internally, but the demo version only comes with English
